@@ -1,37 +1,35 @@
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 
-public class GameLogic {
+public class GameLogic extends JPanel{
 
-	private static JFrame window;
-	private static Character mainCharacter;
+	private JFrame window;
+	private JPanel panel;
+	private int[] screenSize;
+	private Character mainCharacter;
 	
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		window = new JFrame("Game name");
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		window.setVisible(true);
+	public GameLogic() {
+
 		mainCharacter = new Character(100, 100);
-		window.setSize(1200, 900);
-		playTheGame();
+		screenSize = new int[2];
+		screenSize[0] = 1200;
+		screenSize[1] = 900;
+		//playTheGame();
 	}
 	
-	private static void playTheGame(){
-		boolean playing = true;
+	public void paint(Graphics g){
+		Graphics2D gb = (Graphics2D)g;
 		
-		while(playing){
-			// GAME RUNNING
-			readInput();
-			// Do stuff
-			printToScreen();
-		}
+		double[] charPos = mainCharacter.getPosition();
+		BufferedImage charImg = mainCharacter.getFrameImage();
+		gb.drawImage(charImg, 0, 0, charImg.getWidth(), charImg.getHeight(), null);
+		repaint();
 	}
-	private static void printToScreen(){
-		
-	}
-	private static void readInput(){
-		
-	}
+	
 	
 }

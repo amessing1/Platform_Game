@@ -15,7 +15,7 @@ public class Item {
 	public Item(String name, String type){
 		this.name = name;
 		this.type = type;
-		icon = new BufferedImage();
+		icon = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
 	}
 
 
