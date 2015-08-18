@@ -13,6 +13,9 @@ public class Character {
 	private int mana;
 	private Item[] inventory;
 	private Skill[] skills;
+	private boolean left;
+	private boolean right;
+	private boolean jumping;
 	
 	public Character(double x, double y){
 		position = new double[2];
@@ -33,8 +36,21 @@ public class Character {
 	}
 	
 	
-	
-	
+	void setLeft(boolean facingdirection){
+		left = facingdirection;
+		return;
+	}
+	void setRight(boolean facingdirection){
+		right = facingdirection;
+		return;
+	}
+	void jump(){
+		jumping = true;
+		return;
+	}
+	boolean isJumping(){
+		return jumping;
+	}
 	
 	// Getters!!!!!
 	
@@ -60,7 +76,11 @@ public class Character {
 		position[0] = X;
 		position[1] = Y;
 	}
-	public void setVelocity(double X, double Y){
+	public void addVelocity(double X, double Y){
+		velVector[0] += X;
+		velVector[1] += Y;
+	}
+	public void addAcceleration(double X, double Y){
 		velVector[0] = X;
 		velVector[1] = Y;
 	}
