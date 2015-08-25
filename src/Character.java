@@ -6,7 +6,8 @@ import javax.imageio.*;
 public class Character {
 	
 	private double[] position;
-	private double[] velVector; 
+	private double[] velocity;
+	private double[] acceleration;
 	private BufferedImage frameImage;
 	private Animation[] animations;
 	private int health;
@@ -21,9 +22,12 @@ public class Character {
 		position = new double[2];
 		position[0] = x;
 		position[1] = y;
-		velVector = new double[2];
-		velVector[0] = 0;	// x-vector
-		velVector[1] = 0;	// y-vector
+		velocity = new double[2];
+		velocity[0] = 0;	// x-vector
+		velocity[1] = 0;	// y-vector
+		acceleration = new double[2];
+		acceleration[0] = 0;	// x-vector
+		acceleration[1] = 0;	// y-vector
 		health = 100;
 		mana = 100;
 		try{
@@ -58,7 +62,10 @@ public class Character {
 		return position;
 	}
 	public double[] getVelocity(){
-		return velVector;
+		return velocity;
+	}
+	public double[] getAcceleration(){
+		return acceleration;
 	}
 	public BufferedImage getFrameImage(){
 		return frameImage;
@@ -76,13 +83,13 @@ public class Character {
 		position[0] = X;
 		position[1] = Y;
 	}
-	public void addVelocity(double X, double Y){
-		velVector[0] += X;
-		velVector[1] += Y;
+	public void setVelocity(double X, double Y){
+		velocity[0] = X;
+		velocity[1] = Y;
 	}
-	public void addAcceleration(double X, double Y){
-		velVector[0] = X;
-		velVector[1] = Y;
+	public void setAcceleration(double X, double Y){
+		acceleration[0] = X;
+		acceleration[1] = Y;
 	}
 	public void setFrameImage(BufferedImage newFrameImg){
 		frameImage = newFrameImg;
