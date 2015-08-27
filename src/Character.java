@@ -48,8 +48,8 @@ public class Character {
 		right = facingdirection;
 		return;
 	}
-	void jump(){
-		jumping = true;
+	void jump(boolean j){
+		jumping = j;
 		return;
 	}
 	boolean isJumping(){

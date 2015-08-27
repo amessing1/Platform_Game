@@ -5,7 +5,6 @@ public class Game extends JFrame{
 
 	public Game(){
 		add(new GameLogic());
-		System.out.println("Here");
 		setTitle("My Game");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(1200, 900);
