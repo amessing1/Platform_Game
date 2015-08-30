@@ -15,15 +15,15 @@ public class GameLogic extends JPanel{
 
 	private JFrame window;
 	private JPanel panel;
-	private int[] screenSize;
+	private Vector2D screenSize;
 	private Character mainCharacter;
 	private double timePerFrame = 0.033;
-	private double maxSpeedX = 50;
-	private double maxSpeedY = 50;
+	private double maxSpeedX = 2;
+	private double maxSpeedY = 2;
 	private double resistanceX = maxSpeedX / 30;
-	private double gravity = 9.82;
+	private Vector2D gravity;
 	private String mapName = "testmap.txt";
-	private int[] mapSizeInTiles;
+	private Vector2D mapSizeInTiles;
 	private int[][] map;
 	private int pixelPerTile;
 	private BufferedImage tileImg0;
@@ -32,11 +32,10 @@ public class GameLogic extends JPanel{
 	
 	public GameLogic() {
 
-		screenSize = new int[2];
-		screenSize[0] = 1280;
-		screenSize[1] = 720;
+		screenSize = new Vector2D(1280, 720);
+		gravity = new Vector2D(0, 1);
 		loadMap(mapName);
-		mainCharacter = new Character(pixelPerTile * 3, pixelPerTile * 7);
+		mainCharacter = new Character(new Vector2D(200, 200));
 		addKeyListener(new TAdapter());
 		setFocusable(true);
 		//playTheGame();
@@ -51,15 +50,16 @@ public class GameLogic extends JPanel{
 		
 		calculatePlayerMovement();
 		drawMap(gb);
-		double[] charPos = mainCharacter.getPosition();
+		Vector2D charPos = mainCharacter.getPosition();
 		BufferedImage charImg = mainCharacter.getFrameImage();
-		gb.drawImage(charImg, (int)(charPos[0] - (charImg.getWidth() / 2)) , (int)(charPos[1] - charImg.getHeight()), charImg.getWidth(), charImg.getHeight(), null);
+		gb.drawImage(charImg, (int)(charPos.x - (charImg.getWidth() / 2)) , (int)(charPos.y - charImg.getHeight()), charImg.getWidth(), charImg.getHeight(), null);
 		
 		long endTime;
-		while(((endTime = System.currentTimeMillis()) - startTime) < 33){
+		while(((endTime = System.currentTimeMillis()) - startTime) < 3000){
 			// wait
 		}
-		System.out.println("" + (endTime - startTime));
+		//System.out.println("" + (endTime - startTime));
+		System.out.println("" + charPos.x + ", " + charPos.y);
 		repaint();
 	}
 	
@@ -74,21 +74,20 @@ public class GameLogic extends JPanel{
 		} catch (Exception e){
 				System.out.println("Failed to read tile1.");
 		}
-		mapSizeInTiles = new int[2];
+		
 		File file = new File(name);
 		try {
 			Scanner s = new Scanner(file);
 			String tiles = s.nextLine();
 			String[] mapTiles = tiles.split("[\\s*]");
-			mapSizeInTiles[0] = Integer.parseInt(mapTiles[0]);
-			mapSizeInTiles[1] = Integer.parseInt(mapTiles[1]);
-			map = new int[mapSizeInTiles[0]][mapSizeInTiles[1]];
+			mapSizeInTiles = new Vector2D(Integer.parseInt(mapTiles[0]), Integer.parseInt(mapTiles[1]));
+			map = new int[(int)mapSizeInTiles.x][(int)mapSizeInTiles.y];
 			pixelPerTile = Integer.parseInt(s.nextLine());
-			for (int y = 0; y < mapSizeInTiles[1]; y++) {
+			for (int y = 0; y < mapSizeInTiles.y; y++) {
 				String line = s.nextLine();
 				System.out.println(line);
 				String[] a = line.split("[\\s*]");
-				for (int x = 0; x < mapSizeInTiles[0]; x++) {
+				for (int x = 0; x < mapSizeInTiles.x; x++) {
 					map[x][y] = Integer.parseInt(a[x]);
 				}
 			}
@@ -100,8 +99,8 @@ public class GameLogic extends JPanel{
 	
 	private void drawMap(Graphics2D gb){
 		BufferedImage tileImg = null;
-		for(int x = 0; x < mapSizeInTiles[0]; x++){
-			for(int y = 0; y < mapSizeInTiles[1]; y++){
+		for(int x = 0; x < mapSizeInTiles.x; x++){
+			for(int y = 0; y < mapSizeInTiles.y; y++){
 				switch(map[x][y]){
 				case 0:
 					tileImg = tileImg0;
@@ -118,43 +117,42 @@ public class GameLogic extends JPanel{
 	}
 	
 	private void calculatePlayerMovement(){
-		double[] charAcc = mainCharacter.getAcceleration();
-		double[] charPos = mainCharacter.getPosition();
-		double[] charVel = mainCharacter.getVelocity();
+		Vector2D charAcc = mainCharacter.getAcceleration();
+		Vector2D charPos = mainCharacter.getPosition();
+		Vector2D charVel = mainCharacter.getVelocity();
 		
-		charVel[0] += (charAcc[0] * maxSpeedX) * timePerFrame;
-		charVel[1] += (charAcc[1] * maxSpeedY) * timePerFrame;
+		Vector2D temp = charAcc.vectorMulti(maxSpeedX);
+		charVel = charVel.vectorAdd(temp.vectorMulti(timePerFrame));
 		
-		if(charVel[0] > 0){
-			charVel[0] -= resistanceX;
-			if(charVel[0] < 0) charVel[0] = 0;
-		} else if(charVel[0] < 0){
-			charVel[0] += resistanceX;
-			if(charVel[0] > 0) charVel[0] = 0;
+		if(charVel.x > 0){
+			charVel.x -= resistanceX;
+			if(charVel.x < 0) charVel.x = 0;
+		} else if(charVel.x < 0){
+			charVel.x += resistanceX;
+			if(charVel.x > 0) charVel.x = 0;
 		} else {
 			// standing still
 		}
-		if(charVel[0] > maxSpeedX) charVel[0] = maxSpeedX;
-		if(charVel[0] < -maxSpeedX) charVel[0] = -maxSpeedX;
-		if(charVel[1] > maxSpeedY) charVel[1] = maxSpeedY;
-		double xPosToTest = charPos[0] + (charVel[0] * timePerFrame);
-		double yPosToTest = charPos[1] + (charVel[1] * timePerFrame);
+		if(charVel.x > maxSpeedX) charVel.x = maxSpeedX;
+		if(charVel.x < -maxSpeedX) charVel.x = -maxSpeedX;
+		if(charVel.y > maxSpeedY) charVel.y = maxSpeedY;
+		Vector2D PosToTest = charPos.vectorAdd((charVel.vectorMulti(timePerFrame)));
 		
 		// collision with map
-		int currentTileX = (int)(xPosToTest / pixelPerTile);
-		int currentTileY = (int)(yPosToTest / pixelPerTile);
-		switch(map[currentTileX][currentTileY]){
+		Vector2D currentTile = (PosToTest.vectorDivide(pixelPerTile));
+		
+		switch(map[(int)currentTile.x][(int)currentTile.y]){
 			case 0:
-				charPos[0] = xPosToTest;
-				charPos[1] = yPosToTest;
+				charPos = PosToTest;
 				break;
 			case 1:
 				// don't go there
+				
 				break;
 		}
-		charVel[1] += gravity; // Use when we have a map and real movement.
-		mainCharacter.setPosition(charPos[0], charPos[1]);
-		mainCharacter.setVelocity(charVel[0], charVel[1]);
+		charVel = charVel.vectorAdd(gravity);
+		mainCharacter.setPosition(charPos);
+		mainCharacter.setVelocity(charVel);
 		return;
 	}
 	
@@ -170,18 +168,18 @@ public class GameLogic extends JPanel{
 			
 			int key = e.getKeyCode();
 			if(key == KeyEvent.VK_LEFT) {
-				mainCharacter.setAcceleration(-10.0, 0);
+				mainCharacter.setAcceleration(new Vector2D(-1.0, 0));
 				mainCharacter.setLeft(true);
 			}
 			if(key == KeyEvent.VK_RIGHT) {
-				mainCharacter.setAcceleration(10.0, 0);
+				mainCharacter.setAcceleration(new Vector2D(1.0, 0));
 				mainCharacter.setRight(true);
 			}
 			
 			if(key == KeyEvent.VK_SPACE) {
 				System.out.println("Space Pressed");
 				if(!mainCharacter.isJumping()){
-					mainCharacter.setAcceleration(0, -10);
+					mainCharacter.setAcceleration(new Vector2D(0, -1));
 					mainCharacter.jump(true);
 				}
 				
@@ -201,11 +199,11 @@ public class GameLogic extends JPanel{
 		public void keyReleased(KeyEvent e) {
 			int key = e.getKeyCode();
 			if(key == KeyEvent.VK_LEFT) {
-				mainCharacter.setAcceleration(0, 0);
+				mainCharacter.setAcceleration(new Vector2D(0, 0));
 				mainCharacter.setLeft(false);
 			}
 			if(key == KeyEvent.VK_RIGHT) {
-				mainCharacter.setAcceleration(0, 0);
+				mainCharacter.setAcceleration(new Vector2D(0, 0));
 				mainCharacter.setRight(false);
 			}
 			if(key == KeyEvent.VK_SPACE) {

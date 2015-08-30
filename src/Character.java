@@ -5,9 +5,9 @@ import javax.imageio.*;
 
 public class Character {
 	
-	private double[] position;
-	private double[] velocity;
-	private double[] acceleration;
+	private Vector2D position; //pixels
+	private Vector2D velocity;
+	private Vector2D acceleration;
 	private BufferedImage frameImage;
 	private Animation[] animations;
 	private int health;
@@ -18,16 +18,10 @@ public class Character {
 	private boolean right;
 	private boolean jumping;
 	
-	public Character(double x, double y){
-		position = new double[2];
-		position[0] = x;
-		position[1] = y;
-		velocity = new double[2];
-		velocity[0] = 0;	// x-vector
-		velocity[1] = 0;	// y-vector
-		acceleration = new double[2];
-		acceleration[0] = 0;	// x-vector
-		acceleration[1] = 0;	// y-vector
+	public Character(Vector2D pos){ // pixels
+		position = pos;
+		velocity = new Vector2D(0, 0);
+		acceleration = new Vector2D(0, 0);
 		health = 100;
 		mana = 100;
 		try{
@@ -58,13 +52,13 @@ public class Character {
 	
 	// Getters!!!!!
 	
-	public double[] getPosition(){
+	public Vector2D getPosition(){
 		return position;
 	}
-	public double[] getVelocity(){
+	public Vector2D getVelocity(){
 		return velocity;
 	}
-	public double[] getAcceleration(){
+	public Vector2D getAcceleration(){
 		return acceleration;
 	}
 	public BufferedImage getFrameImage(){
@@ -79,17 +73,17 @@ public class Character {
 	
 	// Setters!!!!!
 	
-	public void setPosition(double X, double Y){
-		position[0] = X;
-		position[1] = Y;
+	public void setPosition(Vector2D newPos){
+		position = newPos;
+
 	}
-	public void setVelocity(double X, double Y){
-		velocity[0] = X;
-		velocity[1] = Y;
+	public void setVelocity(Vector2D newVel){
+		velocity = newVel;
+		
 	}
-	public void setAcceleration(double X, double Y){
-		acceleration[0] = X;
-		acceleration[1] = Y;
+	public void setAcceleration(Vector2D newAcc){
+		acceleration = newAcc;
+		
 	}
 	public void setFrameImage(BufferedImage newFrameImg){
 		frameImage = newFrameImg;
