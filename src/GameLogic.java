@@ -18,8 +18,8 @@ public class GameLogic extends JPanel{
 	private Vector2D screenSize;
 	private Character mainCharacter;
 	private double timePerFrame = 0.033;
-	private double maxSpeedX = 2;
-	private double maxSpeedY = 2;
+	private double maxSpeedX = 100;
+	private double maxSpeedY = 10;
 	private double resistanceX = maxSpeedX / 30;
 	private Vector2D gravity;
 	private String mapName = "testmap.txt";
@@ -33,7 +33,7 @@ public class GameLogic extends JPanel{
 	public GameLogic() {
 
 		screenSize = new Vector2D(1280, 720);
-		gravity = new Vector2D(0, 1);
+		gravity = new Vector2D(0, 98.2);
 		loadMap(mapName);
 		mainCharacter = new Character(new Vector2D(200, 200));
 		addKeyListener(new TAdapter());
@@ -55,7 +55,7 @@ public class GameLogic extends JPanel{
 		gb.drawImage(charImg, (int)(charPos.x - (charImg.getWidth() / 2)) , (int)(charPos.y - charImg.getHeight()), charImg.getWidth(), charImg.getHeight(), null);
 		
 		long endTime;
-		while(((endTime = System.currentTimeMillis()) - startTime) < 3000){
+		while(((endTime = System.currentTimeMillis()) - startTime) < 33){
 			// wait
 		}
 		//System.out.println("" + (endTime - startTime));
@@ -136,11 +136,16 @@ public class GameLogic extends JPanel{
 		if(charVel.x > maxSpeedX) charVel.x = maxSpeedX;
 		if(charVel.x < -maxSpeedX) charVel.x = -maxSpeedX;
 		if(charVel.y > maxSpeedY) charVel.y = maxSpeedY;
-		Vector2D PosToTest = charPos.vectorAdd((charVel.vectorMulti(timePerFrame)));
+		Vector2D PosToTest = new Vector2D(charPos.x + (charVel.x * timePerFrame), charPos.y + (charVel.y * timePerFrame));
 		
 		// collision with map
-		Vector2D currentTile = (PosToTest.vectorDivide(pixelPerTile));
+		Vector2D currentTile = new Vector2D((int)(PosToTest.x / pixelPerTile), (int)(PosToTest.y / pixelPerTile));
+		if(currentTile.x >= mapSizeInTiles.x) currentTile.x = mapSizeInTiles.x - 1;
+		if(currentTile.y >= mapSizeInTiles.y) currentTile.y = mapSizeInTiles.y - 1;
+		if(currentTile.x < 0) currentTile.y = 0;
+		if(currentTile.y < 0) currentTile.y = 0;
 		
+		System.out.println("" + currentTile.x + ", " + currentTile.y);
 		switch(map[(int)currentTile.x][(int)currentTile.y]){
 			case 0:
 				charPos = PosToTest;
@@ -207,6 +212,7 @@ public class GameLogic extends JPanel{
 				mainCharacter.setRight(false);
 			}
 			if(key == KeyEvent.VK_SPACE) {
+				mainCharacter.setAcceleration(new Vector2D(0, 0));
 				mainCharacter.jump(false);
 			}
 		}
